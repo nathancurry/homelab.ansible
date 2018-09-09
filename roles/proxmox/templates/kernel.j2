@@ -1,0 +1,2 @@
+-kernel /tmp/{{ item.value.type }}-{{ deployments[item.value.type].kernel | basename }}
+ -initrd /tmp/{{ item.value.type }}-{{ deployments[item.value.type].initrd | basename }}

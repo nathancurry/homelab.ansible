@@ -1,0 +1,21 @@
+{% include 'kernel.j2' %}
+ -append "inst.stage2={{ item.value.stage2 | default(deployments[item.value.type].stage2) }}
+ inst.repo={{ item.value.repo | default(deployments[item.value.type].repo) }}
+ inst.ks={{ item.value.ks | default(deployments[item.value.type].ks) }}
+ rd.noverifyssl net_cfg=#network --device=link --bootproto=
+{% if item.value.network is defined %}
+{% if ( item.value.network.ip is defined and item.value.network.netmask is defined ) %}static
+ --ip={{ item.value.network.ip}} --netmask={{ item.value.network.netmask }}
+{% if item.value.network.gateway is defined %}
+ --gateway={{ item.value.network.gateway }}
+{% endif %}
+{% if item.value.network.nameserver is defined %}
+ --nameserver={{ item.value.network.nameserver }}
+{% endif %}
+{% endif %}
+{% else %}
+dhcp
+{% endif %}
+ --noipv6
+ --onboot yes
+ --hostname={{ item.key }}#"

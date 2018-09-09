@@ -1,0 +1,4 @@
+---
+- name: site master playbook
+  hosts: all
+  

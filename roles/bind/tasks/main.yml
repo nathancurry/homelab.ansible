@@ -1,0 +1,97 @@
+---
+# tasks file for Bind setup
+- name: Install bind
+  yum:
+    pkg: bind
+    state: installed
+
+# - name: Set hostname
+#   hostname:
+#     name: ns
+
+- name: Set hostname fact
+  set_fact:
+    ansible_fqdn: ns.lan.nathancurry.com
+
+- name: Copy named conf file
+  template:
+    src: named.conf.j2
+    dest: /etc/named.conf
+    owner: root
+    group: named
+    mode: 0660
+  notify: restart named
+
+- name: Make named directory
+  file:
+    path: /etc/named
+    state: directory
+    owner: root
+    group: named
+    mode: 0750
+
+- name: Copy named conf local file
+  template:
+    src: named.conf.local.j2
+    dest: /etc/named/named.conf.local
+    owner: root
+    group: named
+    mode: 0640
+  notify: restart named
+
+
+- name: Make zones Directory
+  file:
+    path: /etc/named/zones
+    state: directory
+    owner: root
+    group: named
+    mode: 0750
+
+- name: Copy forward file
+  template:
+    src: db.forward.j2
+    dest: /etc/named/zones/db.{{ domain }}
+    owner: root
+    group: named
+    mode: 0640
+#  with_dict: "{{ records }}"
+  notify: restart named
+
+
+- name: Copy reverse file
+  template:
+    src: db.reverse.j2
+    dest: /etc/named/zones/db.{{ rev_domain }}
+    owner: root
+    group: named
+    mode: 0640
+#  with_dict: "{{ records }}"
+  notify: restart named
+#
+# - name: Copy forward file
+#   template:
+#     src: db.forward.j2
+#     dest: /etc/named/zones/db.{{ domain }}
+#     owner: root
+#     group: named
+#     mode: 0640
+#   notify: restart named
+#
+#
+# - name: Copy reverse file
+#   template:
+#     src: db.reverse.j2
+#     dest: /etc/named/zones/db.{{ rev_domain }}
+#     owner: root
+#     group: named
+#     mode: 0640
+#   notify: restart named
+
+
+# - name: Open firewall port
+#    firewalld:
+#      service: dns
+#     permanent: true
+#     state: enabled
+#     immediate: yes

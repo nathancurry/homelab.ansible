@@ -1,0 +1,8 @@
+---
+- name: Install BIND
+  hosts: ns
+  gather_facts: true
+  user: root
+
+  roles:
+    - bind

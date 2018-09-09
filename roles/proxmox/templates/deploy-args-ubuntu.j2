@@ -1,0 +1,33 @@
+{% include 'kernel.j2' %}
+ -append "preseed/url={{ item.value.preseed | default(deployments[item.value.type].preseed) }}
+ debian-installer/allow_unauthenticated_ssl=true
+ locale=de_DE.UTF-8
+ debian/priority=critical
+ vga=normal debian-installer/keymap=de
+ console-keymaps-at/keymap=de
+ console-setup/layoutcode=de_DE
+ netcfg/choose_interface=auto
+ localechooser/translation/warn-light=true
+ localechooser/translation/warn-severe=true
+ console-setup/ask_detect=false
+ netcfg/get_hostname={{ item.key }}
+{% if item.value.network is defined %}
+{% if item.value.network.domainname is defined %}
+ netcfg/get_domain={{ item.value.network.domainname }}
+{% endif %}
+{% if ( item.value.network.ip is defined and item.value.network.netmask is defined ) %}
+ netcfg/confirm_static=true
+ netcfg/disable_dhcp=true
+ netcfg/get_ipaddress={{ item.value.network.ip }}
+ netcfg/get_netmask={{ item.value.network.netmask }}
+{% if item.value.network.gateway is defined %}
+ netcfg/get_gateway={{ item.value.network.gateway }}
+{% endif %}
+{% if item.value.network.nameserver is defined %}
+ netcfg/get_nameservers={{ item.value.network.nameserver }}
+{% endif %}
+{% endif %}
+{% else %}
+ netcfg/get_domain=localdomain
+{% endif %}
+ FRONTEND_BACKGROUND=original"

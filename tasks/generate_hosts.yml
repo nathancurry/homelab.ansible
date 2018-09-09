@@ -1,0 +1,9 @@
+---
+# Static hosts for working with inventory without a DNS server
+- name: Generate hosts file
+  hosts: localhost
+  become: true
+  tasks:
+        - name: "Build hosts file"
+          lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ip_address }} {{ hostvars[item].fqdn }} {{item}}" state=present
+          with_items: "{{ groups['all'] }}"

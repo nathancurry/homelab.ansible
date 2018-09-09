@@ -1,0 +1,67 @@
+---
+- name: 'deploy containers'
+
+  hosts: 'gold'
+  gather_facts: false
+
+  handlers:
+  - name: 'sleep'
+    pause:
+      seconds: 10
+
+  tasks:
+  - name: Load relevant secrets
+    include_vars: "~/0/vault/proxmox.yml"
+    no_log: false
+
+  - name: 'include vars'
+    include_vars: 'vars.yml'
+
+  - name: 'create containers'
+    proxmox:
+      password: '{{ root_password }}'
+      vmid: '{{ item.value.vmid | default([])}}'
+      api_user: "{{ api_user }}"
+      api_password: "{{ api_password }}"
+      api_host: "{{ api_host }}"
+      hostname: '{{ item.value.fqdn }}'
+      node: '{{ item.value.node }}'
+      cores: '{{ item.value.cores | default(defaults.cores) }}'
+      cpus: '{{ item.value.cpus | default(defaults.cpus) }}'
+      netif: '{{ item.value.netif | default(defaults.netif) }}'
+      memory: '{{ item.value.memory | default(defaults.memory.ct) }}'
+      swap: '{{ item.value.swap | default([]) }}'
+      disk: '{{ item.value.disk | default(defaults.disk.ct) }}'
+      storage: '{{ item.value.storage | default(defaults.storage.lvm) }}'
+      onboot: '{{ item.value.onboot | default(defaults.onboot) }}'
+      pubkey: '{{ id_ed25519_pub }}'
+      searchdomain: '{{ item.value.searchdomain | default(defaults.searchdomain) }}'
+      nameserver: '{{ item.value.nameserver | default(defaults.nameserver) }}'
+      ostemplate: '{{ ostemplate }}'
+      state: 'present'
+    with_dict: "{{ cts }}"
+    loop_control:
+      pause: 5
+    notify:
+      - 'sleep'
+    register: 'created_cts_pve'
+    when: 'not item.value.cloudinit | default(false) | bool'
+
+  - meta: 'flush_handlers'
+    when: 'created_cts_pve.changed'
+
+  - name: 'start containers'
+    proxmox:
+      api_user: "{{ api_user }}"
+      api_password: "{{ api_password }}"
+      api_host: "{{ api_host }}"
+      node: "{{ item.item.value.node }}"
+      hostname: "{{ item.item.value.fqdn }}"
+      state: 'started'
+    with_items: "{{ created_cts_pve.results }}"
+    notify:
+      - 'sleep'
+    when: 'item.changed'
+
+  - meta: 'flush_handlers'
+    when: 'created_vms_pve.changed'
