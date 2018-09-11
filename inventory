@@ -13,11 +13,20 @@ mass
 db
 dbz
 
-[services]
-ns
+[ns-masters]
+ns1
+
+[ns-slaves]
+ns2
+
+[ns:children]
+ns-masters
+ns-slaves
+
+
+[idm]
 ipa
 ipb
-
 
 [workstations]
 tiny

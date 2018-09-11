@@ -6,15 +6,15 @@ api_host: 'bronze'
 defaults:
   balloon: '1024'
   cores: '1'
-  cpu: 'host'
+  cpus: '1'
   disk:
-    ct: '3'
+    ct: '2'
     vm: '10'
   format: 'qcow2'
   memory:
     ct: '1024'
     vm: '2048'
-  nameserver: '10.3.3.1'
+  nameserver: '10.3.3.2'
   net: '{"net0":"virtio,bridge=vmbr0"}'
   netif: '{"net0":"name=eth0,ip=dhcp,ip6=dhcp,bridge=vmbr0"}'
   onboot: true
@@ -25,24 +25,10 @@ defaults:
   storage:
     gluster: 'gluster'
     lvm: 'local-lvm'
+  swap:
+    ct: '0'
+    vm: '4'
+  type: centos
   virtio: '{"scsi0":"gluster:10,cache=writeback,discard=on"}'
 
-ostemplate: 'gluster:vztmpl/centos-7-ssh-20180908.tar.gz'
-
-cts:
-  ns:
-    fqdn: 'ns.lan.nathancurry.com'
-    vmid: 201
-    node: 'gold'
-    type: 'centos'
-    swap: '0'
-    disk: '2'
-    cores: '1'
-    cpus: '1'
-    netif: '{"net0":"name=eth0,type=veth,bridge=vmbr0,ip6=auto,gw=10.3.3.1,hwaddr=52:54:00:76:b4:78,ip=10.3.3.2/25"}'
-
-    #
-    # ip_address: '10.3.3.2'
-    # netmask: '255.255.255.128'
-    # gateway: '10.3.3.1'
-    # nameserver: '10.3.3.1'
+ostemplate: 'gluster:vztmpl/centos-7-ssh-sudo_20180909.tar.gz'

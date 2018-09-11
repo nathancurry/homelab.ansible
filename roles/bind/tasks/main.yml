@@ -5,13 +5,13 @@
     pkg: bind
     state: installed
 
-# - name: Set hostname
-#   hostname:
-#     name: ns
-
-- name: Set hostname fact
-  set_fact:
-    ansible_fqdn: ns.lan.nathancurry.com
+- name: Create logging directory
+  file:
+    path: '/var/log/named'
+    owner: 'named'
+    group: 'named'
+    mode: '0700'
+    state: 'directory'
 
 - name: Copy named conf file
   template:
@@ -28,9 +28,9 @@
     state: directory
     owner: root
     group: named
-    mode: 0750
+    mode: 0770
 
-- name: Copy named conf local file
+- name: Copy conf local file
   template:
     src: named.conf.local.j2
     dest: /etc/named/named.conf.local
@@ -39,14 +39,13 @@
     mode: 0640
   notify: restart named
 
-
 - name: Make zones Directory
   file:
     path: /etc/named/zones
     state: directory
     owner: root
     group: named
-    mode: 0750
+    mode: 0770  #named needs write permissions for zone updates
 
 - name: Copy forward file
   template:
@@ -55,9 +54,7 @@
     owner: root
     group: named
     mode: 0640
-#  with_dict: "{{ records }}"
   notify: restart named
-
 
 - name: Copy reverse file
   template:
@@ -66,32 +63,13 @@
     owner: root
     group: named
     mode: 0640
-#  with_dict: "{{ records }}"
   notify: restart named
-#
-# - name: Copy forward file
-#   template:
-#     src: db.forward.j2
-#     dest: /etc/named/zones/db.{{ domain }}
-#     owner: root
-#     group: named
-#     mode: 0640
-#   notify: restart named
-#
-#
-# - name: Copy reverse file
-#   template:
-#     src: db.reverse.j2
-#     dest: /etc/named/zones/db.{{ rev_domain }}
-#     owner: root
-#     group: named
-#     mode: 0640
-#   notify: restart named
 
-
-# - name: Open firewall port
-#    firewalld:
-#      service: dns
-#     permanent: true
-#     state: enabled
-#     immediate: yes
+- name: install dns updater key
+  template:
+    src: rndc.key.j2
+    dest: /etc/rndc.key
+    owner: root
+    group: named
+    mode: 0640
+  notify: restart named

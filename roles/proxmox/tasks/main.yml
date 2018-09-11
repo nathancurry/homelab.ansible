@@ -1,0 +1,8 @@
+---
+- name: Prepare Proxmox hosts and deploy containers
+
+# Install prerequisites
+# - import_playbook: install_pip.yml
+
+# Deploy containers
+- import_playbook: deploy_containers.yml

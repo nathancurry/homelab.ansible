@@ -1,0 +1,71 @@
+---
+- name: 'deploy containers'
+
+  hosts: 'gold'
+  gather_facts: false
+
+  # Set which host groups to deploy as containers and as VMs
+  vars:
+    deploy_cts: "{{ groups['nameservers']}}"
+
+  handlers:
+  - name: 'sleep'
+    pause:
+      seconds: 10
+
+  tasks:
+  - name: Load relevant secrets
+    include_vars: "~/0/vault/proxmox.yml"
+    no_log: false
+
+  - name: 'include vars'
+    include_vars: '../vars/main.yml'
+
+  - name: 'create containers'
+    proxmox:
+      password: '{{ root_password }}'
+      vmid: '{{ hostvars[item].vmid | default([])}}'
+      api_user: "{{ api_user }}"
+      api_password: "{{ api_password }}"
+      api_host: "{{ api_host }}"
+      hostname: '{{ hostvars[item].inventory_hostname }}'
+      node: '{{ hostvars[item].node }}'
+      cores: '{{ hostvars[item].cores | default(defaults.cores) }}'
+      cpus: '{{ hostvars[item].cpus | default(defaults.cpus) }}'
+      netif: "{{ '{\"net0\":\"name=eth0,type=veth,bridge=vmbr0,ip6=auto,gw=10.3.3.1,hwaddr=' + hostvars[item].mac_address + ',ip=' + hostvars[item].ip_address + '/25\"}' | default(defaults.netif) }}"
+      memory: '{{ hostvars[item].memory | default(defaults.memory.ct) }}'
+      swap: '{{ hostvars[item].swap | default(defaults.swap.ct) }}'
+      disk: '{{ hostvars[item].disk | default(defaults.disk.ct) }}'
+      storage: '{{ hostvars[item].storage | default(defaults.storage.lvm) }}'
+      onboot: '{{ hostvars[item].onboot | default(defaults.onboot) }}'
+      pubkey: '{{ id_ed25519_pub }}'
+      searchdomain: '{{ hostvars[item].searchdomain | default(defaults.searchdomain) }}'
+      nameserver: '{{ hostvars[item].nameserver | default(defaults.nameserver) }}'
+      ostemplate: '{{ ostemplate }}'
+      state: 'present'
+    with_items: "{{ deploy_cts }}"
+    loop_control:
+      pause: 5
+    notify:
+      - 'sleep'
+    register: 'created_cts_pve'
+
+
+  - meta: 'flush_handlers'
+    when: 'created_cts_pve.changed'
+
+  - name: 'start containers'
+    proxmox:
+      api_user: "{{ api_user }}"
+      api_password: "{{ api_password }}"
+      api_host: "{{ api_host }}"
+      node: "{{ item['invocation']['module_args']['node'] }}"
+      hostname: "{{ item['item'] }}"
+      state: 'started'
+    with_items: "{{ created_cts_pve.results }}"
+    notify:
+      - 'sleep'
+    #when: 'item.changed'
+
+  - meta: 'flush_handlers'
+    when: 'created_vms_pve.changed'

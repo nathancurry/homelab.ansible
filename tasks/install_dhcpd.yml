@@ -1,5 +1,5 @@
 ---
-- name: Install BIND
+- name: Install DHCPD
   hosts: ns
   gather_facts: true
   user: root
@@ -8,4 +8,4 @@
     - ~/0/vault/proxmox.yml
 
   roles:
-    - bind
+    - dhcpd

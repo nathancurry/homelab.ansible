@@ -1,15 +1,15 @@
-$ORIGIN .
-$TTL 604800	; 1 week
-{{ rev_domain }}	IN SOA	{{ ansible_fqdn }}. admin.{{ domain }}. (
+$TTL 86400	; 1 day
+@	IN SOA	{{ ansible_fqdn }}. admin.{{ domain }}. (
 				7          ; serial
 				604800     ; refresh (1 week)
 				86400      ; retry (1 day)
 				2419200    ; expire (4 weeks)
 				604800     ; minimum (1 week)
 				)
-		IN	NS	{{ ansible_fqdn }}.
-$ORIGIN {{ rev_domain }}.
-$TTL 604800	; 1 week
+;name servers
+				NS	ns1.lan.nathancurry.com.
+				NS	ns2.lan.nathancurry.com.
+;PTR records
 {% for host in hostlist %}
-{{ hostvars[host].ip_address|regex_replace('10.3.3.') }}  IN   PTR   {{ domain }}.
+{{ hostvars[host].ip_address|regex_replace('10.3.3.') }}  IN   PTR   {{ hostvars[host].fqdn }}.
 {% endfor %}

@@ -1,0 +1,47 @@
+# roles/dhcp/tasks/main.yml
+---
+
+- name: Install packages
+  package:
+    pkg: "dhcp"
+    state: "present"
+
+- name: Set config directory perms
+  file:
+    path: "/etc/dhcp"
+    state: directory
+    mode: 0750
+
+- name: install dns updater key
+  template:
+    src: rndc.key.j2
+    dest: /etc/dhcp/rndc.key
+    owner: root
+    group: dhcpd
+    mode: 0640
+  notify: restart dhcpd
+
+- name: install dhcp failover key
+  template:
+    src: omapi.key.j2
+    dest: /etc/dhcp/omapi.key
+    owner: root
+    group: dhcpd
+    mode: 0640
+  notify: restart dhcpd
+
+- name: Install config file
+  template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    owner: root
+    group: root
+    mode: 0640
+    force: yes
+  notify: restart dhcpd
+
+- name: Ensure service is started
+  service:
+    name: "dhcpd"
+    state: started
+    enabled: true
