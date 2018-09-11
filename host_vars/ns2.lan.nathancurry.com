@@ -1,5 +1,4 @@
-fqdn: 'ns2.lan.nathancurry.com'
-ip_address: '10.3.3.3'
+ansible_host: '10.3.3.3'
 mac_address: '52:54:00:5b:cb:ea'
 services: [ 'dns', 'dhcp' ]
 vmid: '202'

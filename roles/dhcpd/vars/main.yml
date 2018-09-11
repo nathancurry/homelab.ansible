@@ -6,8 +6,8 @@ reverse_zone: '3.3.10.in-addr.arpa.'
 # DHCP subnet variables
 dhcp_subnet: 10.3.3.0
 dhcp_netmask: 255.255.255.128
-dhcp_ns1: "{{ hostvars['ns1'].ip_address }}"
-dhcp_ns2: "{{ hostvars['ns2'].ip_address }}"
+dhcp_ns1: "{{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}"
+dhcp_ns2: "{{ hostvars['ns2.lan.nathancurry.com'].ansible_host }}"
 dhcp_routers: 10.3.3.1
 dhcp_begin: 10.3.3.80
 dhcp_end: 10.3.3.127

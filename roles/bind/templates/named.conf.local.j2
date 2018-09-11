@@ -18,19 +18,19 @@ zone "{{ rev_domain }}" IN {
 zone "{{ domain }}" IN {
   type slave;
   file "/etc/named/zones/db.{{ domain }}";
-  allow-update-forwarding {127.0.0.1; {{ hostvars['ns1'].ip_address }}; {{ hostvars['ns2'].ip_address }}; };
-  allow-notify { {{ hostvars['ns1'].ip_address }}; };
-  allow-transfer { {{ hostvars['ns1'].ip_address }}; };
-  masters { {{ hostvars['ns1'].ip_address }}; };
+  allow-update-forwarding {127.0.0.1; {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; {{ hostvars['ns2.lan.nathancurry.com'].ansible_host }}; };
+  allow-notify { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
+  allow-transfer { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
+  masters { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
 };
 
 zone "{{ rev_domain }}" IN {
   type slave;
   file "/etc/named/zones/db.{{ rev_domain }}";
-  allow-update-forwarding {127.0.0.1; {{ hostvars['ns1'].ip_address }}; {{ hostvars['ns2'].ip_address }}; };
-  allow-notify { {{ hostvars['ns1'].ip_address }}; };
-  allow-transfer { {{ hostvars['ns1'].ip_address }}; };
-  masters { {{ hostvars['ns1'].ip_address }}; };
+  allow-update-forwarding {127.0.0.1; {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; {{ hostvars['ns2.lan.nathancurry.com'].ansible_host }}; };
+  allow-notify { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
+  allow-transfer { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
+  masters { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
 };
 
 {% endif %}

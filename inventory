@@ -1,32 +1,32 @@
 [all]
 
 [proxmox]
-gold
-silver
-bronze
+gold.lan.nathancurry.com
+silver.lan.nathancurry.com
+bronze.lan.nathancurry.com
 
 [storage]
-share
-mass
+share.lan.nathancurry.com
+mass.lan.nathancurry.com
 
 [database]
-db
-dbz
+db.lan.nathancurry.com
+dbz.lan.nathancurry.com
 
 [ns-masters]
-ns1
+ns1.lan.nathancurry.com
 
 [ns-slaves]
-ns2
+ns2.lan.nathancurry.com
 
 [ns:children]
-ns-masters
-ns-slaves
+ns-masters.lan.nathancurry.com
+ns-slaves.lan.nathancurry.com
 
 
 [idm]
-ipa
-ipb
+ipa.lan.nathancurry.com
+ipb.lan.nathancurry.com
 
 [workstations]
-tiny
+tiny.lan.nathancurry.com

@@ -11,5 +11,5 @@ $TTL 86400	; 1 day
 				NS	ns2.lan.nathancurry.com.
 ;PTR records
 {% for host in hostlist %}
-{{ hostvars[host].ip_address|regex_replace('10.3.3.') }}  IN   PTR   {{ hostvars[host].fqdn }}.
+{{ hostvars[host].ansible_host|regex_replace('10.3.3.') }}  IN   PTR   {{ hostvars[host].fqdn }}.
 {% endfor %}

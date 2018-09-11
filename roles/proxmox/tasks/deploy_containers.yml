@@ -1,7 +1,7 @@
 ---
 - name: 'deploy containers'
 
-  hosts: 'gold'
+  hosts: 'gold.lan.nathancurry.com'
   gather_facts: false
 
   # Set which host groups to deploy as containers and as VMs
@@ -32,7 +32,7 @@
       node: '{{ hostvars[item].node }}'
       cores: '{{ hostvars[item].cores | default(defaults.cores) }}'
       cpus: '{{ hostvars[item].cpus | default(defaults.cpus) }}'
-      netif: "{{ '{\"net0\":\"name=eth0,type=veth,bridge=vmbr0,ip6=auto,gw=10.3.3.1,hwaddr=' + hostvars[item].mac_address + ',ip=' + hostvars[item].ip_address + '/25\"}' | default(defaults.netif) }}"
+      netif: "{{ '{\"net0\":\"name=eth0,type=veth,bridge=vmbr0,ip6=auto,gw=10.3.3.1,hwaddr=' + hostvars[item].mac_address + ',ip=' + hostvars[item].ansible_host + '/25\"}' | default(defaults.netif) }}"
       memory: '{{ hostvars[item].memory | default(defaults.memory.ct) }}'
       swap: '{{ hostvars[item].swap | default(defaults.swap.ct) }}'
       disk: '{{ hostvars[item].disk | default(defaults.disk.ct) }}'

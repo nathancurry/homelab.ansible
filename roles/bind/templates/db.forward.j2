@@ -10,5 +10,5 @@ $TTL 86400	; 1 day
 		IN	NS	ns2.lan.nathancurry.com.
 
 {% for host in hostlist %}
-{{ host }}  IN  A  {{ hostvars[host].ip_address }}
+{{ host }}  IN  A  {{ hostvars[host].ansible_host }}
 {% endfor %}

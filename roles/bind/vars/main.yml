@@ -8,8 +8,8 @@ hostlist: "{{ groups['all'] }}"
 # set_fact:
 #   records: "{{ records|default([]) + [
 #   hostname': item,
-#   forward': hostvars[item].ip_address
+#   forward': hostvars[item].ansible_host
 #   type: 'A']
-#   last': hostvars[item].ip_address|regex_replace('10.3.3.')
+#   last': hostvars[item].ansible_host|regex_replace('10.3.3.')
 #   rev': '3.3.10.in-addr.arpa.
 # with_items: "{{ groups['all'] }}"

@@ -1,14 +1,14 @@
 failover peer "failover-dhcp" {
 {% if ansible_hostname in groups['ns-masters'] %}
   primary;
-  address {{ hostvars['ns1'].ip_address }};
-  peer address {{ hostvars['ns2'].ip_address }};
+  address {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }};
+  peer address {{ hostvars['ns2.lan.nathancurry.com'].ansible_host }};
   mclt 3600;
   split 128;
 {% else %}
   secondary;
-  address {{ hostvars['ns2'].ip_address }};
-  peer address {{ hostvars['ns1'].ip_address }};
+  address {{ hostvars['ns2.lan.nathancurry.com'].ansible_host }};
+  peer address {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }};
 {% endif %}
   port 647;
   peer port 647;
@@ -50,11 +50,11 @@ option domain-name "{{ search_domain }}";
 
 # DNS Zones
 zone {{ reverse_zone }}{
-  primary {{ hostvars['ns1'].ip_address }};
+  primary {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }};
   key "rndc-key";
 }
 zone {{ search_domain }} {
-  primary {{ hostvars['ns1'].ip_address }};
+  primary {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }};
   key "rndc-key";
 }
 
@@ -78,8 +78,8 @@ host {{ host }} {
 {% if hostvars[host].mac_address is defined %}
 hardware ethernet {{ hostvars[host].mac_address }};
 {% endif %}
-{% if hostvars[host].ip_address is defined %}
-fixed-address {{ hostvars[host].ip_address }};
+{% if hostvars[host].ansible_host is defined %}
+fixed-address {{ hostvars[host].ansible_host }};
 {% endif %}
 }
 
