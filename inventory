@@ -5,8 +5,10 @@ gold.lan.nathancurry.com
 silver.lan.nathancurry.com
 bronze.lan.nathancurry.com
 
+[kickstart]
+repo.lan.nathancurry.com
+
 [storage]
-share.lan.nathancurry.com
 mass.lan.nathancurry.com
 
 [database]
@@ -20,13 +22,20 @@ ns1.lan.nathancurry.com
 ns2.lan.nathancurry.com
 
 [ns:children]
-ns-masters.lan.nathancurry.com
-ns-slaves.lan.nathancurry.com
+ns-masters
+ns-slaves
 
+[ipaservers:children]
+ipa-masters
+ipa-slaves
 
-[idm]
+[ipa-masters]
 ipa.lan.nathancurry.com
+
+[ipa-slaves]
 ipb.lan.nathancurry.com
+
+
 
 [workstations]
 tiny.lan.nathancurry.com
