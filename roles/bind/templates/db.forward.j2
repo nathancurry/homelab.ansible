@@ -1,14 +1,13 @@
-$TTL 86400	; 1 day
-@	IN SOA	{{ ansible_fqdn }}. admin.{{ domain }}. (
+$ORIGIN .
+$TTL 604800	; 1 week
+{{ domain }}	IN SOA	{{ ansible_fqdn }}. admin.{{ domain }}. (
 				8          ; serial
 				604800     ; refresh (1 week)
 				86400      ; retry (1 day)
 				2419200    ; expire (4 weeks)
 				604800     ; minimum (1 week)
 				)
-		IN	NS	ns1.lan.nathancurry.com.
-		IN	NS	ns2.lan.nathancurry.com.
-
+			NS	{{ ansible_fqdn }}.
 {% for host in hostlist %}
 {{ host }}  IN  A  {{ hostvars[host].ansible_host }}
 {% endfor %}

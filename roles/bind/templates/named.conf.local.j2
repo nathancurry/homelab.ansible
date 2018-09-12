@@ -1,36 +1,16 @@
-{% if ansible_hostname in groups['ns-masters'] %}
 zone "{{ domain }}" IN {
     type master;
     file "/etc/named/zones/db.{{ domain }}";
     allow-update { key rndc-key; };
-    allow-transfer { 10.3.3.0/24; };
-    notify yes;
 };
 
 zone "{{ rev_domain }}" IN {
     type master;
     file "/etc/named/zones/db.{{ rev_domain }}";
-    allow-update { key rndc-key; };
-    allow-transfer { 10.3.3.0/24; };
-    notify yes;
-};
-{% else %}
-zone "{{ domain }}" IN {
-  type slave;
-  file "/etc/named/zones/db.{{ domain }}";
-  allow-update-forwarding {127.0.0.1; {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; {{ hostvars['ns2.lan.nathancurry.com'].ansible_host }}; };
-  allow-notify { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
-  allow-transfer { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
-  masters { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
+    allow-update {key rndc-key; };
 };
 
-zone "{{ rev_domain }}" IN {
-  type slave;
-  file "/etc/named/zones/db.{{ rev_domain }}";
-  allow-update-forwarding {127.0.0.1; {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; {{ hostvars['ns2.lan.nathancurry.com'].ansible_host }}; };
-  allow-notify { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
-  allow-transfer { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
-  masters { {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }}; };
+controls {
+     inet 127.0.0.1 port 953
+         allow { 127.0.0.1; } keys { "rndc-key"; };
 };
-
-{% endif %}
