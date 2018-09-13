@@ -1,0 +1,102 @@
+# front matter
+install
+url --url={{ repo_url }}
+skipx
+text
+reboot
+lang en_US.UTF-8
+keyboard us
+eula --agreed
+firstboot --disable
+
+# services
+selinux --disabled
+firewall --disabled
+services --enabled=network,sshd,snmpd,chronyd
+
+# passwords
+rootpw --iscrypted {{ root_password_hash }}
+authconfig --enableshadow --passalgo=sha512
+
+# timezone setup
+timezone --utc --ntpservers {{ ntp_servers|join(',') }} {{ timezone }}
+
+network --device={{ hostvars[item]['netdev'] | default('defaults.netdev') }} --onboot=yes --hostname={{ item }}.{{ hostvars[item]['domain'] | default('defaults.domain') }} {{ hostvars[item]['netargs'] | default('') }} --bootproto=static --ip={{ hostvars[item]['ansible_host'] }} --netmask={{ hostvars[item]['netmask'] | default(defaults['netmask']) }} --gateway={{ hostvars[item]['gateway'] | default('defaults.gw')}} --nameserver=
+{%- for ns in hostvars[item]['nameservers'] | default('defaults.ns') %}
+{{ ns }}{% if not loop.last %},{% endif %}
+{%- endfor %}
+
+
+
+# partition setup
+clearpart --all --drives=vda
+ignoredisk --only-use-vda
+bootloader --location=mbr --timeout=5 --append="{{ bootargs }}"
+zerombr
+clearpart --drives={{ hostvars[item]['drive'] | default('vda') }} --all
+part /boot --fstype=xfs --size=250
+part pv.156 --fstype="lvmpv" --ondisk={{ hostvars[item]['drive'] | default('sda') }} --size=1 --grow
+volgroup {{ inventory_hostname_short }} --pesize=4096 pv.156
+{% if hostvars[item]['swap'] is defined %}
+logvol swap  --fstype="swap" --size=hostvars[item]['swap'] --name=swap --vgname={{ inventory_hostname_short }}
+{% endif %}
+logvol /  --fstype="xfs" --size=1 --name=root --vgname={{ inventory_hostname_short }} --grow
+
+
+# Packages
+%packages
+@minimal
+chrony
+vim-enhanced
+ipa-client
+{% if hostvars[item]['packages'] is defined %}
+{% for pkg in hostvars[item]['packages'] %}
+{{ pkg }}
+{% endfor %}
+{% endif %}
+
+%end
+
+%post --log=/root/ks-post.log
+sed -i -e 's|^# %wheel\tALL=(ALL)\tNOPASSWD: ALL|%wheel\tALL=(ALL)\tNOPASSWD: ALL|; s|^Defaults    requiretty|#&|' /etc/sudoers
+
+
+##########################
+# repository configuration
+find  /etc/yum.repos.d/ -type f -exec mv '{}' '{}'.save ';'
+cat <<'EOF' >/etc/yum.repos.d/local.repo
+[base]
+name=Local CentOS-$releasever - Base
+baseurl=http://repo.lan.nathancurry.com/repo/centos7/base/
+gpgcheck=1
+gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-centos4
+enabled=1
+exclude=centos-release*
+
+#released updates
+[updates]
+name=Local CentOS-$releasever - Updates
+baseurl=http://repo.lan.nathancurry.com/repo/centos7/updates/
+gpgcheck=1
+gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-centos4
+enabled=1
+
+#additional packages that may be useful
+[extras]
+name=Local CentOS-$releasever - Extras
+baseurl=http://repo.lan.nathancurry.com/repo/centos7/extras/
+gpgcheck=1
+gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-centos4
+enabled=1
+
+#epel
+[epel]
+name=Local CentOS-$releasever - Extras
+baseurl=http://repo.lan.nathancurry.com/repo/centos7/epel/
+gpgcheck=1
+gpgkey=http://mirror.grid.uchicago.edu/pub/linux/epel/RPM-GPG-KEY-EPEL-7
+enabled=1
+EOF
+#####################
+# END REPOS
+%end

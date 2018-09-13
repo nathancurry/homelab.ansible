@@ -1,0 +1,140 @@
+install
+lang en_US.UTF-8
+keyboard us
+auth --useshadow --enablemd5
+services --enabled=network,sshd,snmpd,ntpd
+eula --agreed
+
+network --device={{ hostvars[item]['netdev'] | default('eth0') }} --onboot=yes --hostname={{ item }}.{{ hostvars[item]['domain'] | default('example.com') }} {{ hostvars[item]['netargs'] | default('') }}
+{%- if hostvars[item]['ip'] is defined %}
+ --bootproto=static --ip={{ hostvars[item]['ip'] }} --netmask={{ hostvars[item]['netmask'] }} --gateway={{ hostvars[item]['gateway'] }} --nameserver=
+{%- for ns in hostvars[item]['nameservers'] %}
+{{ ns }}{% if not loop.last %},{% endif %}
+{%- endfor %}
+{% else %}
+ --bootproto=dhcp
+{% endif %}
+
+rootpw --iscrypted {{ hostvars[item]['rootpw'] | default('$1$Jxif9H1Q$c5oIEvRdtkSDJs8ZBcRZ3/') }}
+#firewall --disabled
+#selinux --disabled
+timezone --utc {{ hostvars[item]['timezone'] | default('America/Denver') }}
+firstboot --disable
+skipx
+text
+
+ignoredisk --only-use={{ hostvars[item]['drive'] | default('sda') }}
+bootloader --location=mbr --append="ipv6.disable=1 net.ifnames=0 biosdevname=0"
+zerombr
+clearpart --drives={{ hostvars[item]['drive'] | default('sda') }} --all
+part /boot --fstype=xfs --size=250 
+part pv.156 --fstype="lvmpv" --ondisk={{ hostvars[item]['drive'] | default('sda') }} --size=1 --grow
+volgroup centos --pesize=4096 pv.156
+logvol swap  --fstype="swap" --size=8192 --name=swap --vgname=centos
+logvol /  --fstype="xfs" --size=1 --name=root --vgname=centos --grow
+
+
+reboot
+
+%packages
+@^minimal
+@core
+kexec-tools
+net-tools
+net-snmp
+screen
+vim-enhanced
+ipa-client
+
+%end
+
+%post --log=/root/ks-post.log
+
+IPA Client Install
+env DBUS_SYSTEM_BUS_ADDRESS=unix:path=/dev/null getcert list
+env DBUS_SYSTEM_BUS_ADDRESS=unix:path=/dev/null ipa-client-install
+
+# Generate SSH keys to ensure that ipa-client-install uploads them to the IdM server
+/usr/sbin/sshd-keygen
+
+# Run the client install script
+/usr/sbin/ipa-client-install --hostname={{ hostvars[item]['hostname'] }} --domain={{ hostvars[item]['domain'] }} --enable-dns-updates --mkhomedir -w secret --realm={{ hostvars[item]['realm'] }} --server=ipa.{{ hostvars[item]['domain'] }} -N --request-cert --unattended
+
+sed -i -e 's|^# %wheel\tALL=(ALL)\tNOPASSWD: ALL|%wheel\tALL=(ALL)\tNOPASSWD: ALL|; s|^Defaults    requiretty|#&|' /etc/sudoers
+
+### DNS settings
+
+### disable /etc/resolv.conf rewritting if NM is installed
+
+### creating new /etc/hosts
+cat << EOF > /etc/hosts
+# Do not remove the following line, or various programs
+# that require network functionality will fail
+127.0.0.1 localhost.localdomain localhost
+::1       localhost6.localdomain6 localhost6
+{{ hostvars[item]['ip'] }} {{ hostvars[item]['hostname'] | default('localhost')}} {{ item }}
+EOF
+
+### ntp.conf
+
+# repository configuration
+#find  /etc/yum.repos.d/ -type f -exec mv '{}' '{}'.save ';'
+#cat <<'EOF' >/etc/yum.repos.d/Local.repo
+[centos7-updates]
+name=centos7-updates
+baseurl=http://192.168.7.52/repo_mirror/centos7-updates
+enabled=1
+priority=99
+gpgcheck=0
+#
+[centos7-extras]
+name=centos7-extras
+baseurl=http://192.168.7.52/repo_mirror/centos7-extras
+enabled=1
+priority=99
+gpgcheck=0
+#
+[centos7-epel]
+name=centos7-epel
+baseurl=http://192.168.7.52/repo_mirror/centos7-epel
+enabled=1
+priority=1
+gpgcheck=0
+#
+[centos7-base]
+name=centos7-base
+baseurl=http://192.168.7.52/repo_mirror/centos7-base
+enabled=1
+priority=1
+gpgcheck=0
+EOF
+
+### create snmp config
+cat << EOF >/etc/snmp/snmpd.conf
+com2sec         notConfigUser  default       public
+group           notConfigGroup v1            notConfigUser
+group           notConfigGroup v2c           notConfigUser
+access          notConfigGroup ""            any  noauth exact systemview none none
+view            systemview     included      .1
+master  agentx
+agentxperms 770 770 daemon daemon
+dontLogTCPWrappersConnects 1
+interface lo 24 1000000000
+EOF
+
+#install --mode=700 -d /root/.ssh
+#install --mode=700 /dev/null /root/.ssh/authorized_keys
+
+#{% if hostvars[item]['root_authorized_keys'] is defined %}
+#cat << 'EOF' >> /root/.ssh/authorized_keys
+#{{ hostvars[item]['root_authorized_keys'] }}
+#EOF
+#{% endif %}
+
+#{% if root_authorized_keys is defined %}
+#cat << 'EOF' >> /root/.ssh/authorized_keys
+{{ root_authorized_keys }}
+#EOF
+{% endif %}
+
+%end

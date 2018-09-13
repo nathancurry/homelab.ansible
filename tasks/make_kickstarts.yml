@@ -1,0 +1,8 @@
+---
+- name: Make kickstarts
+  hosts: repo.lan.nathancurry.com
+  gather_facts: false
+  user: root
+
+  roles:
+    - kickstart

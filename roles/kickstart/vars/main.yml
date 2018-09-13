@@ -1,0 +1,20 @@
+---
+ks_dir: /data/www/html/ks
+repo_url: 'http://repo.lan.nathancurry.com/repo/centos7/base'
+ntp_servers:
+  - gold.lan.nathancurry.com
+  - silver.lan.nathancurry.com
+  - bronze.lan.nathancurry.com
+timezone: "America/Denver"
+hostlist: "{{ groups[all] }}"
+bootargs: 'console=ttyS0,115200'
+
+
+defaults:
+  netmask: 255.255.255.128
+  ns:
+    - 10.3.3.2
+    - 10.3.3.3
+  gw: 10.3.3.1
+  domain: lan.nathancurry.com
+  netdev: eth0

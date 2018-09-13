@@ -1,0 +1,13 @@
+---
+  - name: Include vars
+    include_vars: ../vars/main.yml
+
+
+  - name: Include secrets
+    include_vars: ~/0/vault/secrets.yml
+
+  - name: Generate unattended install
+    template:
+      src: ../templates/kickstart.j2
+      dest: "{{ ks_dir }}/{{ hostvars[item].inventory_hostname_short }}.ks"
+    with_items: "{{ groups['all'] | difference(groups['proxmox']) }}"
