@@ -1,0 +1,11 @@
+---
+# handlers file for chrony setup
+- name: restart crond
+  service:
+    name: crond
+    state: restarted
+
+- name: restart chronyd
+  service:
+    name: chronyd
+    state: restarted

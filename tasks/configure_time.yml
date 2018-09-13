@@ -1,0 +1,15 @@
+---
+- hosts: proxmox
+  gather_facts: false
+  user: root
+# Debian masters
+  roles:
+    - chrony-master
+
+
+- hosts: all:!proxmox
+  gather_facts: false
+  user: root
+# CentOS slaves
+  roles:
+    - chrony-slave
