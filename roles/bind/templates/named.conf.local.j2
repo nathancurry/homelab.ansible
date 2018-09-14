@@ -1,14 +1,32 @@
+{% if inventory_hostname in groups['nsmasters'] %}
 zone "{{ domain }}" IN {
     type master;
     file "/etc/named/zones/db.{{ domain }}";
     allow-update { key rndc-key; };
+#  	notify yes;
 };
 
 zone "{{ rev_domain }}" IN {
     type master;
     file "/etc/named/zones/db.{{ rev_domain }}";
     allow-update {key rndc-key; };
+#  	notify yes;
 };
+{% else %}
+zone "{{ domain }}" IN {
+    type slave;
+    file "/etc/named/zones/db.{{ domain }}";
+    masters { 10.3.3.3; };
+#  	allow-notify { 10.3.3.3; };
+};
+
+zone "{{ rev_domain }}" IN {
+    type slave;
+    file "/etc/named/zones/db.{{ domain }}";
+    masters { 10.3.3.3; };
+#  	allow-notify { 10.3.3.3; };
+};
+{% endif %}
 
 controls {
      inet 127.0.0.1 port 953

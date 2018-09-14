@@ -1,0 +1,3 @@
+virtio: '{"virtio0":"gluster:15,cache=none,discard=on,format=qcow2"}'
+swap: 2048
+memory: 4096

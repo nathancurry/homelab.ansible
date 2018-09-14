@@ -1,0 +1,5 @@
+---
+  - name: Start tftp
+    service:
+      name: tftp
+      state: started

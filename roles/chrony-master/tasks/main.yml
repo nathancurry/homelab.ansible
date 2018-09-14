@@ -1,6 +1,6 @@
 ---
-  - name: Include vars
-    include_vars: ../vars/main.yml
+  # - name: Include vars
+  #   include_vars: ../vars/main.yml
 
   - name: Include secrets
     include_vars: ~/0/vault/secrets.yml

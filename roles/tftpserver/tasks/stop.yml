@@ -1,0 +1,5 @@
+---
+  - name: Stop tftp
+    service:
+      name: tftp
+      state: stopped

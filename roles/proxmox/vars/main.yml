@@ -4,8 +4,13 @@ api_user: 'root@pam'
 #api_password: 'vault'
 api_host: 'gold'
 
+deploy_vms: "{{ groups['none'] }}"
+deploy_cts: "{{ groups['none'] }}"
+
+
 ostemplate: 'gluster:vztmpl/centos-7-ssh-sudo_20180909.tar.gz'
 proxmox_node: 'gold'
+tftp_server: 'repo.lan.nathancurry.com'
 
 defaults:
   balloon: '1024'

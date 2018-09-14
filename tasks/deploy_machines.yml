@@ -1,0 +1,12 @@
+---
+- hosts: repo.lan.nathancurry.com
+  tasks:
+  - include_tasks: ../roles/tftpserver/tasks/start.yml
+
+- hosts: gold.lan.nathancurry.com
+  roles:
+  - proxmox
+
+- hosts: repo.lan.nathancurry.com
+  tasks:
+  - include_tasks: ../roles/tftpserver/tasks/stop.yml

@@ -16,7 +16,7 @@ acl "lan" {
 
 options {
 	listen-on port 53 { 127.0.0.1; {{ ansible_eth0.ipv4.address }}; };
-	listen-on-v6 port 53 { ::1; };
+#	listen-on-v6 port 53 { ::1; };
 	directory 	"/var/named";
 	dump-file 	"/var/named/data/cache_dump.db";
 	statistics-file "/var/named/data/named_stats.txt";
@@ -31,7 +31,7 @@ options {
 	recursion yes;
 	allow-recursion{ lan; };
 	allow-query { lan; };
-{% if ansible_hostname in groups['ns-masters'] %}
+{% if inventory_hostname in groups['nsmasters'] %}
 	allow-transfer { localhost; 10.3.3.3; };
 {% else %}
 	allow-transfer { none; };

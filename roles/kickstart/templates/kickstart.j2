@@ -47,6 +47,8 @@ logvol /  --fstype="xfs" --size=1 --name=root --vgname=vg_{{ hostvars[item].inve
 @core
 chrony
 vim-enhanced
+libselinux-python
+policycoreutils-python
 {% if hostvars[item]['packages'] is defined %}
 {% for pkg in hostvars[item]['packages'] %}
 {{ pkg }}

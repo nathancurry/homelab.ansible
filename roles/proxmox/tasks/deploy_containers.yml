@@ -1,19 +1,4 @@
 ---
-- name: 'deploy containers'
-
-  hosts: 'gold.lan.nathancurry.com'
-  gather_facts: false
-
-  # Set which host groups to deploy as containers and as VMs
-  vars:
-    deploy_cts: "{{ groups['kickstart'] }}"
-
-  handlers:
-  - name: 'sleep'
-    pause:
-      seconds: 10
-
-  tasks:
   - name: Load relevant secrets
     include_vars: "~/0/vault/proxmox.yml"
     no_log: false

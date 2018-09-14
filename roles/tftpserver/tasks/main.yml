@@ -1,0 +1,32 @@
+---
+  - name: Install packages
+    yum:
+      name: '{{ packages }}'
+      state: 'present'
+      update_cache: 'yes'
+
+  - name: create folder
+    file:
+      path: /var/lib/tftpboot/boot
+      state: directory
+      mode: 0755
+
+  - name: copy files
+    copy:
+      src: '{{ item }}'
+      dest: /var/lib/tftpboot
+      mode: 0755
+    with_fileglob: files/*
+
+  - name: copy boot images
+    copy:
+      src: '{{ item }}'
+      dest: /var/lib/tftpboot/boot
+      mode: 0755
+    with_fileglob: files/boot/*
+
+  - name: create folder
+    file:
+      path: /var/lib/tftpboot/pxelinux.cfg/hosts
+      state: directory
+      mode: 0755

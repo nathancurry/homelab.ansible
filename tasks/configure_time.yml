@@ -1,15 +1,16 @@
----
-- hosts: proxmox
+  ---
+# Debian masters
+- hosts: timeservers
   gather_facts: false
   user: root
-# Debian masters
   roles:
     - chrony-master
+  tags: servers
 
-
-- hosts: all:!proxmox
+# CentOS slaves
+- hosts: timeclients
   gather_facts: false
   user: root
-# CentOS slaves
   roles:
     - chrony-slave
+  tags: clients

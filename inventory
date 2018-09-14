@@ -1,12 +1,22 @@
 [all]
 
-[timeservers:children]
-proxmox
-
 [proxmox]
 gold.lan.nathancurry.com
 silver.lan.nathancurry.com
 bronze.lan.nathancurry.com
+
+[timeservers:children]
+proxmox
+
+[nsmasters]
+ns1.lan.nathancurry.com
+
+[nsslaves]
+ns2.lan.nathancurry.com
+
+[ns:children]
+nsmasters
+nsslaves
 
 [kickstart]
 repo.lan.nathancurry.com
@@ -14,31 +24,31 @@ repo.lan.nathancurry.com
 [storage]
 share.lan.nathancurry.com
 
-[database]
+[dbservers]
 db1.lan.nathancurry.com
 db2.lan.nathancurry.com
 
-[ns-masters]
-ns1.lan.nathancurry.com
-
-[ns-slaves]
-ns2.lan.nathancurry.com
-
-[ns:children]
-ns-masters
-ns-slaves
-
-[ipaservers:children]
-ipa-masters
-ipa-slaves
-
-[ipa-masters]
+[ipaserver]
 ipa1.lan.nathancurry.com
 
-[ipa-slaves]
+[ipareplicas]
 ipa2.lan.nathancurry.com
 
-
+[ipaservers:children]
+ipaserver
+ipareplicas
 
 [workstations]
 tiny.lan.nathancurry.com
+
+[timeclients:children]
+ipaservers
+dbservers
+workstations
+ns
+storage
+
+[ipaclients:children]
+workstations
+ns
+storage
