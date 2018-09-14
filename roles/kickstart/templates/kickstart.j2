@@ -21,31 +21,30 @@ authconfig --enableshadow --passalgo=sha512
 # timezone setup
 timezone --utc --ntpservers {{ ntp_servers|join(',') }} {{ timezone }}
 
-network --device={{ hostvars[item]['netdev'] | default('defaults.netdev') }} --onboot=yes --hostname={{ item }}.{{ hostvars[item]['domain'] | default('defaults.domain') }} {{ hostvars[item]['netargs'] | default('') }} --bootproto=static --ip={{ hostvars[item]['ansible_host'] }} --netmask={{ hostvars[item]['netmask'] | default(defaults['netmask']) }} --gateway={{ hostvars[item]['gateway'] | default('defaults.gw')}} --nameserver=
-{%- for ns in hostvars[item]['nameservers'] | default('defaults.ns') %}
+network --device={{ hostvars[item]['netdev'] | default(defaults.netdev) }} --onboot=yes --hostname={{ item }}.{{ hostvars[item]['domain'] | default(defaults.domain) }} {{ hostvars[item]['netargs'] | default('') }} --bootproto=static --ip={{ hostvars[item]['ansible_host'] }} --netmask={{ hostvars[item]['netmask'] | default(defaults['netmask']) }} --gateway={{ hostvars[item]['gateway'] | default(defaults.gw)}} --nameserver=
+{%- for ns in hostvars[item]['nameservers'] | default(defaults.ns) %}
 {{ ns }}{% if not loop.last %},{% endif %}
 {%- endfor %}
 
 
 
 # partition setup
-clearpart --all --drives=vda
-ignoredisk --only-use-vda
+clearpart --all --drives={{ hostvars[item]['drive'] | default(defaults.drive) }}
 bootloader --location=mbr --timeout=5 --append="{{ bootargs }}"
 zerombr
-clearpart --drives={{ hostvars[item]['drive'] | default('vda') }} --all
+clearpart --drives={{ hostvars[item]['drive'] | default(defaults.drive) }} --all
 part /boot --fstype=xfs --size=250
-part pv.156 --fstype="lvmpv" --ondisk={{ hostvars[item]['drive'] | default('sda') }} --size=1 --grow
-volgroup {{ inventory_hostname_short }} --pesize=4096 pv.156
+part pv.156 --fstype="lvmpv" --ondisk={{ hostvars[item]['drive'] | default(defaults.drive) }} --size=1 --grow
+volgroup vg_{{ hostvars[item].inventory_hostname_short }} --pesize=4096 pv.156
 {% if hostvars[item]['swap'] is defined %}
-logvol swap  --fstype="swap" --size=hostvars[item]['swap'] --name=swap --vgname={{ inventory_hostname_short }}
+logvol swap  --fstype="swap" --size=hostvars[item]['swap'] --name=swap --vgname=vg_{{ inventory_hostname_short }}
 {% endif %}
-logvol /  --fstype="xfs" --size=1 --name=root --vgname={{ inventory_hostname_short }} --grow
+logvol /  --fstype="xfs" --size=1 --name=root --vgname=vg_{{ hostvars[item].inventory_hostname_short }} --grow
 
 
 # Packages
-%packages
-@minimal
+%packages --nobase --ignoremissing
+@core
 chrony
 vim-enhanced
 ipa-client

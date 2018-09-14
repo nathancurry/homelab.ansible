@@ -1,5 +1,8 @@
 [all]
 
+[timeservers:children]
+proxmox
+
 [proxmox]
 gold.lan.nathancurry.com
 silver.lan.nathancurry.com
@@ -9,11 +12,11 @@ bronze.lan.nathancurry.com
 repo.lan.nathancurry.com
 
 [storage]
-mass.lan.nathancurry.com
+share.lan.nathancurry.com
 
 [database]
-db.lan.nathancurry.com
-dbz.lan.nathancurry.com
+db1.lan.nathancurry.com
+db2.lan.nathancurry.com
 
 [ns-masters]
 ns1.lan.nathancurry.com
@@ -30,10 +33,10 @@ ipa-masters
 ipa-slaves
 
 [ipa-masters]
-ipa.lan.nathancurry.com
+ipa1.lan.nathancurry.com
 
 [ipa-slaves]
-ipb.lan.nathancurry.com
+ipa2.lan.nathancurry.com
 
 
 

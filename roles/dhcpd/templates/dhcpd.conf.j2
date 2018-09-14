@@ -30,8 +30,8 @@ include               "/etc/dhcp/rndc.key";
 authoritative;
 allow booting;
 allow bootp;
-#next-server ;
-#filename "pxelinux.0";
+next-server 10.3.3.45;
+filename "pxelinux.0";
 default-lease-time 43000;
 max-lease-time 43000; # about 12hrs
 

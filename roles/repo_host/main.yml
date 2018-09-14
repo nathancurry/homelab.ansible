@@ -1,7 +1,0 @@
----
-- name: set up mass storage
-  hosts: all
-  gather_facts: false
-
-- import_playbook: tasks/prepare_host_node.yml
-- import_playbook: tasks/configure_repo.yml

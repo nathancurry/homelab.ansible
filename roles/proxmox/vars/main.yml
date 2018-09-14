@@ -2,7 +2,11 @@
 # proxmox and proxmox_kvm options
 api_user: 'root@pam'
 #api_password: 'vault'
-api_host: 'bronze'
+api_host: 'gold'
+
+ostemplate: 'gluster:vztmpl/centos-7-ssh-sudo_20180909.tar.gz'
+proxmox_node: 'gold'
+
 defaults:
   balloon: '1024'
   cores: '1'
@@ -17,6 +21,7 @@ defaults:
   nameserver: '10.3.3.2'
   net: '{"net0":"virtio,bridge=vmbr0"}'
   netif: '{"net0":"name=eth0,ip=dhcp,ip6=dhcp,bridge=vmbr0"}'
+  node: 'gold'
   onboot: true
   ostype: 'l26'
   pubkey: ''
@@ -29,6 +34,4 @@ defaults:
     ct: '0'
     vm: '4'
   type: centos
-  virtio: '{"scsi0":"gluster:10,cache=writeback,discard=on"}'
-
-ostemplate: 'gluster:vztmpl/centos-7-ssh-sudo_20180909.tar.gz'
+  virtio: '{"virtio0":"gluster:10,cache=none,discard=on,format=qcow2"}'

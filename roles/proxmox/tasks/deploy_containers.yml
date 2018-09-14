@@ -6,7 +6,7 @@
 
   # Set which host groups to deploy as containers and as VMs
   vars:
-    deploy_cts: "{{ groups['nameservers']}}"
+    deploy_cts: "{{ groups['kickstart'] }}"
 
   handlers:
   - name: 'sleep'
@@ -29,7 +29,7 @@
       api_password: "{{ api_password }}"
       api_host: "{{ api_host }}"
       hostname: '{{ hostvars[item].inventory_hostname }}'
-      node: '{{ hostvars[item].node }}'
+      node: '{{ hostvars[item].proxmox_node }}'
       cores: '{{ hostvars[item].cores | default(defaults.cores) }}'
       cpus: '{{ hostvars[item].cpus | default(defaults.cpus) }}'
       netif: "{{ '{\"net0\":\"name=eth0,type=veth,bridge=vmbr0,ip6=auto,gw=10.3.3.1,hwaddr=' + hostvars[item].mac_address + ',ip=' + hostvars[item].ansible_host + '/25\"}' | default(defaults.netif) }}"
@@ -68,4 +68,4 @@
     #when: 'item.changed'
 
   - meta: 'flush_handlers'
-    when: 'created_vms_pve.changed'
+    when: 'created_cts_pve.changed'

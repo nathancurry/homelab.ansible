@@ -1,6 +1,6 @@
 {% include 'kernel.j2' %}
- -append "inst.stage2={{ item.value.stage2 | default(deployments[item.value.type].stage2) }}
- inst.repo={{ item.value.repo | default(deployments[item.value.type].repo) }}
+ -append "inst.stage2={{ hostvars[item].value.stage2 | default(deployments[hostvars[item].value.type].stage2) }}
+ inst.repo={{ hostvars[item].value.repo | default(deployments[item.value.type].repo) }}
  inst.ks={{ item.value.ks | default(deployments[item.value.type].ks) }}
  rd.noverifyssl net_cfg=#network --device=link --bootproto=
 {% if item.value.network is defined %}
