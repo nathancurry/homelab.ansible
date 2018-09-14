@@ -10,13 +10,13 @@ eula --agreed
 firstboot --disable
 
 # services
-selinux --disabled
-firewall --disabled
 services --enabled=network,sshd,snmpd,chronyd
 
 # passwords
 rootpw --iscrypted {{ root_password_hash }}
 authconfig --enableshadow --passalgo=sha512
+user --groups=wheel --name=nc --password={{ nc_password_hash }} --iscrypted --gecos="nc"
+
 
 # timezone setup
 timezone --utc --ntpservers {{ ntp_servers|join(',') }} {{ timezone }}
@@ -36,8 +36,8 @@ clearpart --drives={{ hostvars[item]['drive'] | default(defaults.drive) }} --all
 part /boot --fstype=xfs --size=250
 part pv.156 --fstype="lvmpv" --ondisk={{ hostvars[item]['drive'] | default(defaults.drive) }} --size=1 --grow
 volgroup vg_{{ hostvars[item].inventory_hostname_short }} --pesize=4096 pv.156
-{% if hostvars[item]['swap'] is defined %}
-logvol swap  --fstype="swap" --size=hostvars[item]['swap'] --name=swap --vgname=vg_{{ inventory_hostname_short }}
+{% if hostvars[item].swap is defined %}
+logvol swap  --fstype="swap" --size={{ hostvars[item].swap }} --name=swap --vgname=vg_{{ hostvars[item].inventory_hostname_short }}
 {% endif %}
 logvol /  --fstype="xfs" --size=1 --name=root --vgname=vg_{{ hostvars[item].inventory_hostname_short }} --grow
 
@@ -47,7 +47,6 @@ logvol /  --fstype="xfs" --size=1 --name=root --vgname=vg_{{ hostvars[item].inve
 @core
 chrony
 vim-enhanced
-ipa-client
 {% if hostvars[item]['packages'] is defined %}
 {% for pkg in hostvars[item]['packages'] %}
 {{ pkg }}
@@ -98,4 +97,21 @@ enabled=1
 EOF
 #####################
 # END REPOS
+
+#---- Install our SSH key ----
+mkdir -m0700 /root/.ssh/
+
+cat <<EOF >/root/.ssh/authorized_keys
+{{ id_ed25519_pub }}
+EOF
+
+### set permissions
+chmod 0600 /root/.ssh/authorized_keys
+
+### fix up selinux context
+restorecon -R /root/.ssh/
+
+####################
+# END SSH KEYS
+
 %end
