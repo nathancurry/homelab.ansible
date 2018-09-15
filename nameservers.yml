@@ -1,11 +1,14 @@
 ---
-- name: Install BIND
+- name: configure nameservers
   hosts: ns
   gather_facts: true
-  user: root
+  become: true
 
   vars_files:
     - ~/0/vault/proxmox.yml
 
   roles:
+    - chronyclient
+    - dhcpd
     - bind
+    - repoclient

@@ -1,0 +1,3 @@
+sudo_group: sudo
+sudo_regex: '^%sudo'
+sudo_line: '%sudo ALL=(ALL) NOPASSWD: ALL'

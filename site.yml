@@ -1,4 +1,7 @@
 ---
-- name: site master playbook
-  hosts: all
-  
+- name: Site playbook
+
+  import_playbook:
+    - hypervisors.yml
+    - reposerver.yml
+    - nameservers.yml

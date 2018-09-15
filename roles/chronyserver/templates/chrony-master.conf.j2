@@ -3,7 +3,7 @@
 server 0.debian.pool.ntp.org iburst xleave
 server 1.debian.pool.ntp.org iburst xleave
 server 2.debian.pool.ntp.org iburst xleave
-{% for host in groups['proxmox'] | difference([inventory_hostname]) %}
+{% for host in groups['hypervisors'] | difference([inventory_hostname]) %}
 peer {{ hostvars[host].ansible_host }} iburst xleave
 {% endfor %}
 

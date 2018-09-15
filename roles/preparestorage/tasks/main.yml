@@ -1,0 +1,25 @@
+---
+- name:  Make sure mount directory exists
+  block:
+  - file:
+      state: 'directory'
+      path: /mnt/external
+      owner: root
+      group: root
+      mode: 0755
+
+  - mount:
+      path: /mnt/external
+      src: 'UUID={{ storage_uuid }}'
+      fstype: ext4
+      opts: relatime
+      state: mounted
+
+  - command: "pct set {{ storage_guest_vmid }} -mp0 /mnt/external,mp=/data"
+    notify: restart container
+
+  # Load vars for handler
+  - include_vars: "~/0/vault/proxmox.yml"
+    no_log: true
+
+  when: storage_uuid is defined

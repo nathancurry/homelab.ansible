@@ -6,7 +6,7 @@
     template:
       src: templates/kickstart.j2
       dest: "{{ ks_dir }}/{{ hostvars[item].inventory_hostname_short }}.ks"
-    with_items: "{{ groups['all'] | difference(groups['proxmox']) }}"
+    with_items: "{{ groups['all'] | difference(groups['hypervisors']) }}"
 
   - name: generate pxe files
     template:

@@ -1,0 +1,15 @@
+---
+- name: enable SSH user
+  hosts: all
+  user: root
+
+  roles:
+    - sshenableuser
+
+- name: disable SSH root
+  hosts: all
+  become: true
+
+  roles:
+    - sshdisableroot
+    - repoclient

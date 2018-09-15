@@ -1,0 +1,10 @@
+---
+- name: Disable root login over SSH
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+  notify:
+    - restart sshd
+
+- name: Disable password login
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+  notify:
+    - restart sshd

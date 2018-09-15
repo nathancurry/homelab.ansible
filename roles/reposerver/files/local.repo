@@ -1,29 +1,29 @@
-[base]
+[base-local]
 name=Local CentOS-$releasever - Base
 baseurl=http://repo.lan.nathancurry.com/repo/centos7/base/
 gpgcheck=1
-gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-centos4
+gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
 enabled=1
 exclude=centos-release*
 
 #released updates
-[updates]
+[updates-local]
 name=Local CentOS-$releasever - Updates
 baseurl=http://repo.lan.nathancurry.com/repo/centos7/updates/
 gpgcheck=1
-gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-centos4
+gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
 enabled=1
 
 #additional packages that may be useful
-[extras]
+[extras-local]
 name=Local CentOS-$releasever - Extras
 baseurl=http://repo.lan.nathancurry.com/repo/centos7/extras/
 gpgcheck=1
-gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-centos4
+gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
 enabled=1
 
 #epel
-[epel]
+[epel-local]
 name=Local CentOS-$releasever - Extras
 baseurl=http://repo.lan.nathancurry.com/repo/centos7/epel/
 gpgcheck=1

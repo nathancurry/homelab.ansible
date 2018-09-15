@@ -1,0 +1,49 @@
+---
+- name: Include secrets
+  include_vars: ~/0/vault/secrets.yml
+
+- name: Set timezone to America/Denver
+  timezone:
+    name: America/Denver
+  notify: restart crond
+
+- name: ensure ntpdate isn't installed
+  package:
+    name: 'ntpdate'
+    state: absent
+
+- name: Mask NTP service
+  systemd:
+    name: ntpd
+    enabled: no
+    masked: yes
+    state: stopped
+  ignore_errors: yes
+
+- name: install chrony
+  package:
+    name: 'chrony'
+    state: present
+
+- name: Ensure chronyd is active
+  service:
+    name: chronyd
+    state: started
+
+- name: install chrony.conf
+  template:
+    src: ../templates/chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart chronyd
+
+- name: install chrony.keys
+  template:
+    src: ../templates/chrony.keys.j2
+    dest: /etc/chrony.keys
+    owner: root
+    group: chrony
+    mode: 0640
+  notify: restart chronyd

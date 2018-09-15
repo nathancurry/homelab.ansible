@@ -1,7 +1,6 @@
 ansible.cfg
 *.retry
-_old
-_test
+_*
 *vmlinuz
 *initrd.img
 *pxelinux.0

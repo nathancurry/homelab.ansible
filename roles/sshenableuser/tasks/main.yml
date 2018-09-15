@@ -1,0 +1,46 @@
+---
+- name: Import variables specific to distribution
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+    - "vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "vars/{{ ansible_distribution }}.yml"
+    - "vars/default.yml"
+
+- name: import secrets
+  include_vars:
+    file: "~/0/vault/secrets.yml"
+
+- name: Add user
+  user:
+    name: "{{ user }}"
+    password: "{{ nc_password_hash }}"
+    groups: "{{ sudo_group }}"
+
+- name: Add authorized key
+  authorized_key:
+    user: "{{ user }}"
+    key: "{{ id_ed25519_pub }}"
+
+- name: Ensure sudo installed
+  package:
+    name: sudo
+    state: present
+
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '{{ sudo_regex }}'
+    line: '{{ sudo_line }}'
+    validate: 'visudo -cf %s'
+  when: (ansible_distribution == "CentOS")
+
+- name: Allow 'sudo' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+  when: (ansible_distribution == "Debian")

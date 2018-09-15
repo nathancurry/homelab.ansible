@@ -1,0 +1,24 @@
+---
+- name: Prepare storage
+  hosts: bronze.lan.nathancurry.com
+  gather_facts: true
+
+  roles:
+    - preparestorage
+
+# Allow container to reboot if necessary.
+  tasks:
+  - name: sleep
+    pause:
+      seconds: 15
+
+- name: Configure local repo server
+  hosts: repo.lan.nathancurry.com
+  gather_facts: false
+  user: root
+
+  roles:
+    - chronyclient
+    - kickstart
+    - reposerver
+    - tftpserver

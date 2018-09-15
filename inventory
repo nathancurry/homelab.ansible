@@ -1,12 +1,9 @@
 [all]
 
-[proxmox]
+[hypervisors]
 gold.lan.nathancurry.com
 silver.lan.nathancurry.com
 bronze.lan.nathancurry.com
-
-[timeservers:children]
-proxmox
 
 [nsmasters]
 ns1.lan.nathancurry.com

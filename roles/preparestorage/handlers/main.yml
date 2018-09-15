@@ -1,0 +1,8 @@
+---
+- name: Restart container
+  proxmox:
+    api_host: '{{ inventory_hostname_short }}'
+    api_user: 'root@pam'
+    api_password: '{{api_password}}'
+    vmid: '{{ vmid }}'
+    state: restarted

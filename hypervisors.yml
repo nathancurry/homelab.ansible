@@ -1,0 +1,7 @@
+---
+- name: Configure Hypervisors
+  hosts: hypervisors
+  become: true
+
+  roles:
+    - chronyserver
