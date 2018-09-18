@@ -1,0 +1,72 @@
+# encoding #
+lang en_US.UTF-8
+keyboard us
+
+# timezone setup
+timezone --utc --ntpservers {{ ntp_servers|join(',') }} {{ timezone }}
+
+# EULA
+eula --agreed
+firstboot --disable
+
+## DISK_SETUP ##
+# clear partitions
+clearpart --all --drives={{ hostvars[item]['drive'] | default(defaults.drive) }}
+zerombr
+
+# bootloader args
+bootloader --location=mbr
+
+# partition definitions
+part /boot --fstype=xfs --size=250 --ondisk={{ hostvars[item]['drive'] | default(defaults.drive) }}
+{% if hostvars[item].swap is defined %}
+part swap  --fstype="swap" --size={{ hostvars[item].swap }} --ondisk={{ hostvars[item]['drive'] | default(defaults.drive) }}
+{% endif %}
+part /  --fstype="xfs" --ondisk={{ hostvars[item]['drive'] | default(defaults.drive) }} --size=1 --grow
+
+## NETWORK SETTINGS
+firewall --enabled  --ssh
+
+network --activate --device=eth0 --onboot=yes --bootproto=dhcp --hostname={{ hostvars[item].inventory_hostname }}
+
+## SELINUX ##
+selinux --enforcing
+
+## ACCOUNT CREATION ##
+
+# passwords
+rootpw --iscrypted {{ root_password_hash }}
+
+auth --enableshadow --passalgo=sha512
+user --groups=wheel --name=nc --password={{ nc_password_hash }} --iscrypted
+
+## SSH KEYS ##
+sshkey --username=root "{{ id_ed25519_pub }}"
+sshkey --username=nc "{{ id_ed25519_pub }}"
+
+## INSTALL ##
+install
+url --url="{{ hostvars[item].install_url | default(repo_url) }}"
+
+# text mode
+text
+skipx
+
+
+# Packages
+%packages
+@core
+chrony
+vim-enhanced
+sudo
+{% if hostvars[item]['packages'] is defined %}
+{% for pkg in hostvars[item]['packages'] %}
+{{ pkg }}
+{% endfor %}
+{% endif %}
+
+%end
+%post --log=/root/ks-post.log
+sed -i -e 's|^# %wheel\tALL=(ALL)\tNOPASSWD: ALL|%wheel\tALL=(ALL)\tNOPASSWD: ALL|; s|^Defaults    requiretty|#&|' /etc/sudoers
+%end
+reboot

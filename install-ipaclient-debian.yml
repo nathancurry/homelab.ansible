@@ -1,0 +1,9 @@
+---
+- name: Playbook to configure IPA clients with username/password
+  hosts: hypervisors
+  become: true
+  vars_files:
+    - ~/0/vault/secrets.yml
+
+  roles:
+  - role: ipaclientdebian

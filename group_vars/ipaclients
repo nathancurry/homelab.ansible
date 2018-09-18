@@ -1,0 +1,12 @@
+---
+ipaclient_domain: lan.nathancurry.com
+ipaclient_realm: LAN.NATHANCURRY.COM
+ipaclient_no_ntp: true
+ipaclient_allow_repair: true
+ipaclient_force_join: true
+
+ipaservers:
+  - ipa1.lan.nathancurry.com
+
+ipacelient_servers:
+  - ipa1.lan.nathancurry.com

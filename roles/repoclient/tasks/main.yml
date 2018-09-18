@@ -1,7 +1,18 @@
 ---
-- name: set up mass storage
-  hosts: all
-  gather_facts: false
-
-- import_playbook: tasks/prepare_host_node.yml
-- import_playbook: tasks/configure_repo.yml
+- name: Set up local repositories
+  block:
+    - yum_repository:
+        name: '{{ item }}'
+        state: absent
+      with_items:
+        - base
+        - extras
+        - updates
+        - epel
+    - copy:
+        src: 'local.repo'
+        dest: '/etc/yum.repos.d/local.repo'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+  when: (ansible_distribution == "CentOS")

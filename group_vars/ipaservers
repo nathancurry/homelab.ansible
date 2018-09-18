@@ -3,11 +3,5 @@ virtio: '{"virtio0":"gluster:15,cache=none,discard=on,format=qcow2"}'
 swap: 2048
 memory: 4096
 
-ipaserver_domain: 'lan.nathancurry.com'
-ipaserver_realm: 'LAN.NATHANCURRY.COM'
-ipaserver_forwarders:
-  - 10.3.3.2
-  - 10.3.3.3
-ipaserver_forward_policy: first
-ipaserver_no_reverse: false
-ipaserver_setup_dns: yes
+#distro: fc28
+#install_url: 'http://download.fedoraproject.org/pub/fedora/linux/releases/28/Server/x86_64/os'

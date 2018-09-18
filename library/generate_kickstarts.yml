@@ -1,0 +1,7 @@
+---
+- name: generate kickstarts
+  hosts: repo.lan.nathancurry.com
+  become: true
+
+  roles:
+    - kickstart

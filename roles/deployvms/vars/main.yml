@@ -1,0 +1,42 @@
+---
+# proxmox and proxmox_kvm options
+api_user: 'root@pam'
+#api_password: 'vault'
+api_host: 'gold'
+
+deploy_vms: "{{ groups['ipaserver'] }}"
+deploy_cts: "{{ groups['none'] }}"
+
+
+ostemplate: 'gluster:vztmpl/centos-7-ssh-sudo_20180909.tar.gz'
+proxmox_node: 'gold'
+tftp_server: 'repo.lan.nathancurry.com'
+
+defaults:
+  balloon: '1024'
+  cores: '1'
+  cpus: '1'
+  disk:
+    ct: '2'
+    vm: '10'
+  format: 'qcow2'
+  memory:
+    ct: '1024'
+    vm: '2048'
+  nameserver: '10.3.3.2'
+  net: '{"net0":"virtio,bridge=vmbr0"}'
+  netif: '{"net0":"name=eth0,ip=dhcp,ip6=dhcp,bridge=vmbr0"}'
+  node: 'gold'
+  onboot: true
+  ostype: 'l26'
+  pubkey: ''
+  scsihw: 'virtio-scsi-pci'
+  searchdomain: 'lan.nathancurry.com'
+  storage:
+    gluster: 'gluster'
+    lvm: 'local-lvm'
+  swap:
+    ct: '0'
+    vm: '4'
+  type: centos
+  virtio: '{"virtio0":"gluster:10,cache=none,discard=on,format=qcow2"}'

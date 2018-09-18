@@ -2,8 +2,10 @@
 ks_dir: /data/www/html/ks
 menu_dir: /var/lib/tftpboot/pxelinux.cfg/
 
-repo_url: 'http://repo.lan.nathancurry.com/repo/centos7/base'
+repo_url: 'http://repo.lan.nathancurry.com/repo/centos7-base'
 ks_url: 'http://repo.lan.nathancurry.com/ks'
+
+boot_distro: 'centos7-1804'
 
 ntp_servers:
   - gold.lan.nathancurry.com

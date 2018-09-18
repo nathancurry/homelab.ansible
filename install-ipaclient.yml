@@ -1,0 +1,19 @@
+---
+- name: Playbook to configure IPA clients with username/password
+  hosts: repo.lan.nathancurry.com
+  become: true
+  vars_files:
+    - ~/0/vault/secrets.yml
+
+
+  tasks:
+  - name: resolv
+    lineinfile:
+      path: /etc/resolv.conf
+      state: present
+      line: nameserver 10.3.3.11
+      insertbefore: 'BOF'
+
+  roles:
+  - role: ipaclient
+    state: present

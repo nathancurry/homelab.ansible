@@ -1,14 +1,19 @@
 ---
 - name: enable SSH user
-  hosts: all
-  user: root
+  hosts: ipareplicas
+  # user: root
+  become: true
 
   roles:
     - sshenableuser
 
 - name: disable SSH root
-  hosts: all
+  hosts: ipareplicas
   become: true
+
+  #  tasks:
+          #    - name: Install python
+          #raw: "yum -y install python2 python3"
 
   roles:
     - sshdisableroot

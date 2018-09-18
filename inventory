@@ -33,7 +33,7 @@ ipa2.lan.nathancurry.com
 
 [ipaservers:children]
 ipaserver
-ipareplicas
+
 
 [workstations]
 tiny.lan.nathancurry.com
@@ -44,8 +44,10 @@ dbservers
 workstations
 ns
 storage
+kickstart
 
 [ipaclients:children]
-workstations
 ns
 storage
+ipareplicas
+kickstart

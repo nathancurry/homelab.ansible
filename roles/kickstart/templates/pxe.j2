@@ -1,8 +1,9 @@
 {% if hostvars[item]['mac_address'] is defined %}
 {% include "host_default.j2" %}
 {% endif %}
+
 LABEL {{ item }}
 MENU LABEL {{ item }}
   ipappend 2
-  kernel /boot/centos7-1804-vmlinuz
-  append initrd=/boot/centos7-1804-initrd.img repo={{ repo_url }}/ ks={{ ks_url }}/{{ hostvars[item].inventory_hostname_short }}.ks
+  kernel /boot/{{ hostvars[item].distro | default(boot_distro) }}-vmlinuz
+  append initrd=/boot/{{ hostvars[item].distro | default(boot_distro) }}-initrd.img repo={{ hostvars[item].install_url | default(repo_url) }} ks={{ ks_url }}/{{ hostvars[item].inventory_hostname_short }}.ks {{ hostvars[item]['bootargs'] | default('ksdevice=bootif vga=791') }}

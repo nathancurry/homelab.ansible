@@ -18,47 +18,42 @@
     name: httpd
     state: started
 
-- name: make repo directory
+- name: make dirs
   file:
-    dest: '/data/www/html/repo/centos7'
+    dest: '/data/www/html/{{ item }}'
     state: 'directory'
     owner: 'root'
     group: 'apache'
     mode: '0750'
-
-- name: make metadata dir
-  file:
-    dest: '/data/www/html/repo/meta/repos'
-    state: 'directory'
-    owner: 'root'
-    group: 'apache'
-    mode: '0750'
+  with_items:
+    - 'repo'
+    - 'meta/repos'
 
 - name: Install reposync.conf
   copy:
-    src: '../files/reposync.conf'
-    dest: '/data/www/html/repo/meta/reposync.conf'
+    src: 'reposync.conf'
+    dest: '/data/www/html/meta/reposync.conf'
     owner: 'root'
     group: 'root'
     mode: '0600'
 
-- name: install centos7.repo
+- name: install reposync.repo
   copy:
-    src: '../files/centos7.repo'
-    dest: '/data/www/html/repo/meta/repos/centos7.repo'
+    src: 'reposync.repo'
+    dest: '/data/www/html/meta/repos/reposync.repo'
     owner: 'root'
     group: 'root'
     mode: '0600'
 
 - name: Set reposync cron file
   cron:
-    name: 'reposync centos7'
+    name: 'reposync'
     weekday: '*'
     minute: 0
     hour: 1
     user: root
-    job: "reposync -n -d -a x86_64 -p /data/www/html/repo/centos7 -c /data/www/html/repo/meta/reposync.conf"
-    cron_file: 'ansible_reposync-centos7'
+    job: "reposync -n -d -a x86_64 -p /data/www/html/repo/ -c /data/www/html/meta/reposync.conf"
+    cron_file: 'ansible_reposync'
 
 - name: Make local repo available on server
   copy:

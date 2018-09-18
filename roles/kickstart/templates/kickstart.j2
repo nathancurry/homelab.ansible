@@ -1,6 +1,6 @@
 # front matter
 install
-url --url={{ repo_url }}
+url --url={{ hostvars[item].install_url | default(repo_url) }}
 skipx
 text
 reboot
@@ -17,11 +17,10 @@ rootpw --iscrypted {{ root_password_hash }}
 authconfig --enableshadow --passalgo=sha512
 user --groups=wheel --name=nc --password={{ nc_password_hash }} --iscrypted --gecos="nc"
 
-
 # timezone setup
 timezone --utc --ntpservers {{ ntp_servers|join(',') }} {{ timezone }}
 
-network --device={{ hostvars[item]['netdev'] | default(defaults.netdev) }} --onboot=yes --hostname={{ item }}.{{ hostvars[item]['domain'] | default(defaults.domain) }} {{ hostvars[item]['netargs'] | default('') }} --bootproto=static --ip={{ hostvars[item]['ansible_host'] }} --netmask={{ hostvars[item]['netmask'] | default(defaults['netmask']) }} --gateway={{ hostvars[item]['gateway'] | default(defaults.gw)}} --nameserver=
+network --device={{ hostvars[item]['netdev'] | default(defaults.netdev) }} --onboot=yes --hostname={{ item }} {{ hostvars[item]['netargs'] | default('') }} --bootproto=static --ip={{ hostvars[item]['ansible_host'] }} --netmask={{ hostvars[item]['netmask'] | default(defaults['netmask']) }} --gateway={{ hostvars[item]['gateway'] | default(defaults.gw)}} --nameserver=
 {%- for ns in hostvars[item]['nameservers'] | default(defaults.ns) %}
 {{ ns }}{% if not loop.last %},{% endif %}
 {%- endfor %}
@@ -60,60 +59,50 @@ policycoreutils-python
 %post --log=/root/ks-post.log
 sed -i -e 's|^# %wheel\tALL=(ALL)\tNOPASSWD: ALL|%wheel\tALL=(ALL)\tNOPASSWD: ALL|; s|^Defaults    requiretty|#&|' /etc/sudoers
 
+## SSH KEYS ##
+sshkey --username=root "{{ id_ed25519_pub }}"
+sshkey --username=nc "{{ id_ed25519_pub }}"
+
+
 
 ##########################
 # repository configuration
-find  /etc/yum.repos.d/ -type f -exec mv '{}' '{}'.save ';'
-cat <<'EOF' >/etc/yum.repos.d/local.repo
-[base]
+#find  /etc/yum.repos.d/ -type f -exec mv '{}' '{}'.save ';'
+cat <<'EOF' > /dev/null
+#/etc/yum.repos.d/local.repo
+[base-local]
 name=Local CentOS-$releasever - Base
-baseurl=http://repo.lan.nathancurry.com/repo/centos7/base/
+baseurl=http://repo.lan.nathancurry.com/repo/centos7-base/
 gpgcheck=1
-gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=http://repo.lan.nathancurry.com/repo/centos7-base/RPM-GPG-KEY-CentOS-7
 enabled=1
 exclude=centos-release*
 
 #released updates
-[updates]
+[updates-local]
 name=Local CentOS-$releasever - Updates
-baseurl=http://repo.lan.nathancurry.com/repo/centos7/updates/
+baseurl=http://repo.lan.nathancurry.com/repo/centos7-updates/
 gpgcheck=1
-gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=repo.lan.nathancurry.com/repo/centos7-updates/RPM-GPG-KEY-CentOS-7
 enabled=1
 
 #additional packages that may be useful
-[extras]
+[extras-local]
 name=Local CentOS-$releasever - Extras
-baseurl=http://repo.lan.nathancurry.com/repo/centos7/extras/
+baseurl=http://repo.lan.nathancurry.com/repo/centos7-extras/
 gpgcheck=1
-gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+gpgkey=repo.lan.nathancurry.com/repo/centos7-extras/RPM-GPG-KEY-CentOS-7
 enabled=1
 
 #epel
-[epel]
+[epel-local]
 name=Local CentOS-$releasever - Extras
-baseurl=http://repo.lan.nathancurry.com/repo/centos7/epel/
+baseurl=http://repo.lan.nathancurry.com/repo/centos7-epel/
 gpgcheck=1
 gpgkey=http://mirror.grid.uchicago.edu/pub/linux/epel/RPM-GPG-KEY-EPEL-7
 enabled=1
 EOF
 #####################
 # END REPOS
-
-#---- Install our SSH key ----
-mkdir -m0700 /root/.ssh/
-
-cat <<EOF >/root/.ssh/authorized_keys
-{{ id_ed25519_pub }}
-EOF
-
-### set permissions
-chmod 0600 /root/.ssh/authorized_keys
-
-### fix up selinux context
-restorecon -R /root/.ssh/
-
-####################
-# END SSH KEYS
 
 %end

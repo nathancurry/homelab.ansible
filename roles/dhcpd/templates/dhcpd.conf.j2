@@ -1,5 +1,5 @@
 failover peer "failover-dhcp" {
-{% if ansible_hostname in groups['ns-masters'] %}
+{% if ansible_hostname in groups['nsmasters'] %}
   primary;
   address {{ hostvars['ns1.lan.nathancurry.com'].ansible_host }};
   peer address {{ hostvars['ns2.lan.nathancurry.com'].ansible_host }};

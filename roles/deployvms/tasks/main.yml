@@ -1,0 +1,3 @@
+---
+- import_tasks: deploy_vms.yml
+#- import_tasks: deploy_containers.yml

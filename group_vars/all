@@ -1,2 +1,15 @@
 ---
 searchdomain: 'lan.nathancurry.com'
+
+ipaserver_domain: 'lan.nathancurry.com'
+ipaserver_realm: 'LAN.NATHANCURRY.COM'
+ipaserver_forwarders:
+  - 10.3.3.2
+  - 10.3.3.3
+ipaserver_no_reverse: false
+ipaserver_setup_dns: yes
+
+ipaclient_domain: 'lan.nathancurry.com'
+ipaclient_no_ntp: 'yes'
+
+freeipa_server: 'ipa1.lan.nathancurry.com'

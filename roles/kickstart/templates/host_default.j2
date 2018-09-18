@@ -2,10 +2,10 @@ UI menu.c32
 MENU TITLE Host Menu
 PXERetry 5
 PROMPT 0
-{% if item is defined and host_menu|default('') == "pxe" %}
+{% if item is defined and host_menu | default('') == "pxe" %}
 DEFAULT  {{ item }}
 {% endif %}
-TIMEOUT {{ menu_timeout |default(15) }}
+TIMEOUT {{ menu_timeout | default(15) }}
 LABEL bootlocal
   MENU LABEL Local Boot
   TEXT HELP
