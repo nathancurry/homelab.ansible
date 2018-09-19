@@ -23,18 +23,19 @@
     enabled: no
     masked: yes
     state: stopped
+  ignore_errors: yes
 
 - name: Ensure chronyd is active
   service:
     name: chronyd
     state: started
 
-# timeservers, debian
+# timeservers, CentOS
 
 - name: install chrony.conf
   template:
-    src: ../templates/chrony-master.conf.j2
-    dest: /etc/chrony/chrony.conf
+    src: chrony-server.conf.j2
+    dest: /etc/chrony.conf
     owner: root
     group: root
     mode: 0644
@@ -42,8 +43,8 @@
 
 - name: install chrony.keys
   template:
-    src: ../templates/chrony.keys.j2
-    dest: /etc/chrony/chrony.keys
+    src: chrony.keys.j2
+    dest: /etc/chrony.keys
     owner: root
     group: root
     mode: 0640

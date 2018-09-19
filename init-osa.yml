@@ -1,0 +1,23 @@
+---
+- name: set up user ssh
+  hosts: openstacknodes
+  user: root
+  become: true
+
+  vars_files:
+    - ~/0/vault/secrets.yml
+
+  roles:
+  - sshenableuser
+
+- name: init OpenStack Ansible hosts
+  hosts: openstacknodes
+  user: stack
+  become: true
+
+  vars_files:
+    - ~/0/vault/secrets.yml
+
+  roles:
+    # - chronyserver
+    - osapreparenode

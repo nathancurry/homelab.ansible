@@ -1,0 +1,38 @@
+---
+- name: install rdo-release
+  yum:
+    name: 'https://rdoproject.org/repos/openstack-queens/rdo-release-queens.rpm'
+    state: present
+
+- name: install packages on deployhost
+  yum:
+    name: "{{ deploypackages }}"
+    state: present
+
+- name: install deploy key on deployhost
+  blockinfile:
+    block: "{{ id_ed25519_private }}"
+    create: yes
+    mode: 0600
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    path: "/home/{{ user }}/.ssh/id_ed25519"
+
+- name: make osa dir
+  file:
+    path: /opt/openstack-ansible
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0750
+    state: directory
+
+- name: git
+  git:
+    dest: /opt/openstack-ansible
+    repo: https://git.openstack.org/openstack/openstack-ansible
+    version: 17.1.0
+
+- name: bootstrap ansible
+  command: './scripts/bootstrap-ansible.sh'
+  args:
+    chdir: /opt/openstack-ansible

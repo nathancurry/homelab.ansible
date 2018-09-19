@@ -13,3 +13,5 @@ ipaclient_domain: 'lan.nathancurry.com'
 ipaclient_no_ntp: 'yes'
 
 freeipa_server: 'ipa1.lan.nathancurry.com'
+
+user: nc

@@ -1,0 +1,15 @@
+---
+deploypackages:
+  - git
+  - python-devel
+  - '@Development Tools'
+
+nodepackages:
+  - bridge-utils
+  - iputils
+  - lsof
+  - lvm2
+  - chrony
+  - openssh-server
+  - sudo
+  - python

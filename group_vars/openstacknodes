@@ -1,0 +1,8 @@
+---
+user: stack
+# freeipa_client: True
+# freeipa_servers: [ 'ipa1.{{ ansible_domain }}' ]
+# auth_cracklib: False
+# auth_nsswitch: [ 'compat', 'sss' ]
+# sshd_authorized_keys_lookup: True
+# sshd_authorized_keys_lookup_type: [ 'sss' ]

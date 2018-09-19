@@ -13,7 +13,7 @@
 
 - name: Add user
   user:
-    name: "{{ user }}"
+    name: "{{ user | default(defaultuser) }}"
     password: "{{ nc_password_hash }}"
     groups: "{{ sudo_group }}"
 
@@ -21,6 +21,12 @@
   authorized_key:
     user: "{{ user }}"
     key: "{{ id_ed25519_pub }}"
+
+- name: Add authorized key
+  authorized_key:
+    user: "root"
+    key: "{{ id_ed25519_pub }}"
+
 
 - name: Ensure sudo installed
   package:

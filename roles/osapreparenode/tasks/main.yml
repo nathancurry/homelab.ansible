@@ -1,0 +1,31 @@
+---
+- name: install packages
+  yum:
+    name: "{{ nodepackages }}"
+    state: present
+    update_cache: yes
+
+- name: Include deployhost tasks.
+  import_tasks: deployhost.yml
+  when: deployhost is defined
+
+- name: load modules at boot
+  copy:
+    src: openstack-ansible.conf
+    dest: /etc/modules-load.d/openstack-ansible.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: lower kernel logging level
+  lineinfile:
+    line: "kernel.printk='4 1 7 4'"
+    insertafter: EOF
+    path: /etc/sysctl.conf
+    state: present
+
+- name: stop and mask firewall
+  systemd:
+    name: firewalld
+    state: stopped
+    masked: yes

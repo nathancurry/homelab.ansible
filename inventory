@@ -1,9 +1,12 @@
 [all]
 
-[hypervisors]
-gold.lan.nathancurry.com
-silver.lan.nathancurry.com
-bronze.lan.nathancurry.com
+[openstacknodes]
+infra.lan.nathancurry.com
+compute.lan.nathancurry.com
+storage.lan.nathancurry.com
+
+[timeservers:children]
+openstacknodes
 
 [nsmasters]
 ns1.lan.nathancurry.com
