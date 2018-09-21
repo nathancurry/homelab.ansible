@@ -1,0 +1,116 @@
+---
+################
+#
+#   DON'T USE THIS, IT'S BROKEN
+#
+
+- name: install necessary packages
+  yum:
+   name: "{{ prerequisites }}"
+   state: present
+
+- name: set default iface
+  nmcli:
+    conn_name: "{{ osa_netdev }}"
+    type: ethernet
+    ip4: "{{ ansible_host }}/{{ native.osa_cidr_prefix }}"
+    gw4: "{{ native.osa_gw4 }}"
+    dns4: "{{ native.osa_dns4 }}"
+    mac: "{{ mac_address }}"
+    state: present
+
+- name: create VLANs
+  nmcli:
+    conn_name: "{{ osa_netdev }}.{{ item }}"
+    type: vlan
+    gw4: ''
+    gw6: ''
+    ip4: ''
+    ip6: ''
+    vlandev: "{{ osa_netdev }}"
+    vlanid: "{{ item }}"
+    state: present
+  with_items: "{{ vid }}"
+
+- name: create the management bridge
+  nmcli:
+    conn_name: br-mgmt
+    type: bridge
+    stp: no
+    forwarddelay: 0
+    ip4: "{{ vlans.container.osa_prefix4 }}.{{ osa_host_id }}/{{ vlans.container.osa_cidr_prefix }}"
+    gw4: "{{ vlans.container.osa_gw4 }}"
+    dns4: "{{ vlans.container.osa_dns4 }}"
+    state: present
+
+- name: add vlan10 to br-mgmt
+  nmcli:
+    conn_name: "{{ osa_netdev }}.10"
+    ifname: "{{ osa_netdev }}.10"
+    type: bridge-slave
+    # hairpin: yes
+    # slavepriority: 32
+    # path_cost: 100
+    master: br-mgmt
+    state: present
+
+- name: add external VIP alias
+  nmcli:
+    conn_name: 'br-mgmt.0'
+    type: generic
+    ip4: "{{ vlans.container.osa_prefix4 }}.10/{{ vlans.container.osa_cidr_prefix }}"
+    state: present
+
+- name: create br-vxlan
+  nmcli:
+    conn_name: br-vxlan
+    type: bridge
+    stp: no
+    forwarddelay: 0
+    ip4: "{{ vlans.networking.osa_prefix4 }}.{{ osa_host_id }}"
+    gw4: "{{ vlans.networking.osa_gw4 }}"
+    dns4: "{{ vlans.networking.osa_dns4 }}"
+    state: present
+
+- name: add vlan30 to br-vxlan
+  nmcli:
+    conn_name: "{{ osa_netdev }}.30"
+    ifname: "{{ osa_netdev }}.30"
+    type: bridge-slave
+    master: br-vxlan
+    state: present
+
+- name: add br-vlan
+  nmcli:
+    conn_name: 'br-vlan'
+    type: bridge
+    stp: no
+    forwarddelay: 0
+    state: present
+
+- name: "add {{ osa_netdev }}  to br-vlan"
+  nmcli:
+    conn_name: "{{ osa_netdev }}"
+    ifname: "{{ osa_netdev }}"
+    type: bridge-slave
+    master: br-vlan
+    state: present
+
+- name: br-storage
+  nmcli:
+    conn_name: br-storage
+    type: bridge
+    stp: no
+    forwarddelay: 0
+    ip4: "{{ vlans.storage.osa_prefix4 }}.{{ osa_host_id }}/{{ vlans.storage.osa_cidr_prefix }}"
+    gw4: "{{ vlans.storage.osa_gw4 }}"
+    dns4: "{{ vlans.storage.osa_dns4 }}"
+    state: present
+
+- name: add vlan20 to br-vxlan
+  nmcli:
+    conn_name: "{{ osa_netdev }}.20"
+    ifname: "{{ osa_netdev }}.20"
+    type: bridge-slave
+    master: br-vxlan
+    state: present

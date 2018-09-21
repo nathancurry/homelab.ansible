@@ -1,0 +1,71 @@
+---
+- name: ensure backup folder exists
+  file:
+    path: "{{ ifcfg_dir }}/backup"
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: get files
+  shell: "ls {{ ifcfg_dir}}/ifcfg-*"
+  register: files_to_move
+
+- name: copy files
+  copy:
+    remote_src: true
+    src: "{{ item }}"
+    dest: "{{ ifcfg_dir }}/backup/"
+  with_items: "{{ files_to_move.stdout_lines }}"
+
+- name: delete files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items: "{{ files_to_move.stdout_lines }}"
+
+- name: install loopback device
+  copy:
+    src: ifcfg-lo
+    dest: "{{ ifcfg_dir }}/ifcfg-lo"
+
+- name: install netdevices file
+  template:
+    src: ifcfg-netdev.j2
+    dest: "{{ ifcfg_dir }}/ifcfg-{{ item.device }}"
+  with_items: "{{ osa_networks }}"
+  when: item['native'] is defined
+
+- name: install vlans
+  template:
+    src: "ifcfg-vlan.j2"
+    dest: "{{ ifcfg_dir }}/ifcfg-{{ item.device }}.{{ item['vlan_id'] }}"
+  with_items: "{{ osa_networks }}"
+  when: item['vlan_id'] is defined
+
+- name: install management bridge
+  template:
+    src: "ifcfg-br-mgmt.j2"
+    dest: "{{ ifcfg_dir }}/ifcfg-br-mgmt"
+  with_items: "{{ osa_networks }}"
+  when: item['name'] == 'br-mgmt'
+
+- name: other bridges
+  template:
+    src: "ifcfg-bridge.j2"
+    dest: "{{ ifcfg_dir }}/ifcfg-{{ item.name }}"
+  with_items: "{{ osa_networks }}"
+  when: item['name'] != 'br-mgmt'
+
+- name: disable NetworkManager
+  systemd:
+    name: NetworkManager
+    state: stopped
+    masked: yes
+  ignore_errors: true
+
+- name: restart network
+  systemd:
+    name: network
+    state: restarted
+    enabled: yes

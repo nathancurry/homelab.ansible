@@ -1,0 +1,16 @@
+NAME={{ item.device }}.{{ item.vlan_id }}
+DEVICE={{ item.device }}.{{ item.vlan_id }}
+UUID={{ inventory_hostname | password_hash('sha512') | to_uuid }}
+PHYSDEV={{ item.device }}
+TYPE=Vlan
+VLAN=yes
+VLAN_ID={{ item.vlan_id }}
+BRIDGE={{ item.name }}
+REORDER_HDR=yes
+GVRP=no
+MVRP=no
+PROXY_METHOD=none
+BROWSER_ONLY=no
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+ONBOOT=yes

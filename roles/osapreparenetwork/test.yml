@@ -1,0 +1,15 @@
+---
+- name: test vars
+  hosts: infra.lan.nathancurry.com
+  user: stack
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+  - name: test
+    debug:
+      msg: "{{ item }}"
+    with_items: "{{ netdev[1] }}"

@@ -1,0 +1,8 @@
+---
+- name: configure OpenStack Ansible networking
+  hosts: openstacknodes
+  user: stack
+  become: true
+
+  roles:
+    - osapreparenetwork

@@ -7,7 +7,7 @@
 
 - name: Include deployhost tasks.
   import_tasks: deployhost.yml
-  when: deployhost is defined
+  when: deployhost
 
 - name: load modules at boot
   copy:

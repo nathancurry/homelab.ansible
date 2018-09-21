@@ -1,0 +1,25 @@
+NAME=br-mgmt
+DEVICE=br-mgmt
+UUID={{ inventory_hostname | password_hash('sha512') | to_uuid }}
+TYPE=Bridge
+STP=no
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=none
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+ONBOOT=yes
+IPADDR={{ item.network }}.{{ osa_host_id }}
+PREFIX={{ item.cidr_prefix}}
+GATEWAY={{ item.gw }}
+{% for object in item.dns %}
+DNS{{loop.index}}={{ object }}
+{% endfor %}
+{% if osa_deployhost is defined %}
+IPADDR2={{ ext_vip_ip }}
+{% endif %}

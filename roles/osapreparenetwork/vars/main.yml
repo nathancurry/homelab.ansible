@@ -1,0 +1,37 @@
+---
+ifcfg_dir: /etc/sysconfig/network-scripts
+
+ext_vip_ip: 10.3.3.10
+
+osa_networks:
+  - native: yes
+    name: br-vlan
+    device: "{{ netdev[1] }}"
+    skip_network: true
+  - native: yes
+    name: br-mgmt
+    device: "{{ netdev[0] }}"
+    network: 10.3.3
+    cidr_prefix: 24
+    gw: 10.3.3.1
+    dns:
+      - 10.3.3.1
+      - 172.98.193.42
+  - vlan_id: 4
+    name: br-vxlan
+    device: "{{ netdev[1] }}"
+    network: 10.3.4
+    cidr_prefix: 24
+    gw: 10.3.4.1
+    dns:
+      - 10.3.4.1
+      - 172.98.193.42
+  - vlan_id: 5
+    name: br-storage
+    device: "{{ netdev[0] }}"
+    network: 10.3.5
+    cidr_prefix: 24
+    gw: 10.3.5.1
+    dns:
+      - 10.3.5.1
+      - 172.98.193.42

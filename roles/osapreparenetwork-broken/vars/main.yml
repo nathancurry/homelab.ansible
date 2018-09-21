@@ -1,0 +1,45 @@
+---
+# Hostvars
+# osa_netdev: physical device ID (eno1, eth0, em1)
+# osa_host_id: last octet
+# ansible_host: host ip address
+# mac_address: host mac address
+
+prerequisites:
+  - python-gobject
+  - NetworkManager-glib
+  # - nm-connection-editor
+  # - libsemanage-python
+  # - policycoreutils-python
+
+osa_bonddev: bond0
+
+native:
+  osa_gw4: 10.3.3.1
+  osa_dns4: "10.3.3.1 172.98.193.42"
+  osa_cidr_prefix: 24
+
+vid:
+  - 10
+  - 20
+  - 30
+
+vlans:
+  container:
+    osa_vlanid: 10
+    osa_gw4: 172.29.236.1
+    osa_prefix4: 172.29.236
+    osa_dns4: "172.29.236.1 172.98.193.42"
+    osa_cidr_prefix: 22
+  networking:
+    osa_vlanid: 20
+    osa_gw4: 172.29.240.1
+    osa_prefix4: 172.29.240
+    osa_dns4: "172.29.240.1 172.98.193.42"
+    osa_cidr_prefix: 22
+  storage:
+    osa_vlanid: 30
+    osa_gw4: 172.29.244.1
+    osa_prefix4: 172.29.244
+    osa_dns4: "172.29.244.1 172.98.193.42"
+    osa_cidr_prefix: 22
